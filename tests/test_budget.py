@@ -88,13 +88,18 @@ class TestRetryBudgetReset:
     def test_reset_restores_full_budget(self):
         budget = RetryBudget(max_retries=3)
         budget.acquire()
-        budget.acquire()
         budget.reset()
         assert budget.remaining() == 3
 
-    def test_acquire_after_reset(self):
-        budget = RetryBudget(max_retries=1)
+    def test_reset_allows_acquire_after_exhaustion(self):
+        budget = RetryBudget(max_retries=2)
+        budget.acquire()
         budget.acquire()
         assert budget.acquire() is False
         budget.reset()
         assert budget.acquire() is True
+
+    def test_reset_idempotent_on_full_budget(self):
+        budget = RetryBudget(max_retries=4)
+        budget.reset()
+        assert budget.remaining() == 4
