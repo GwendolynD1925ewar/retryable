@@ -62,6 +62,16 @@ class RetryBudget:
         with self._lock:
             self._retry_timestamps.clear()
 
+    def is_exhausted(self) -> bool:
+        """Return True if the retry budget is currently exhausted.
+
+        This is a convenience method equivalent to ``remaining() == 0``.
+
+        Returns:
+            True if no retries remain in the current window, False otherwise.
+        """
+        return self.remaining() == 0
+
     def __repr__(self) -> str:
         return (
             f"RetryBudget(max_retries={self.max_retries}, "
