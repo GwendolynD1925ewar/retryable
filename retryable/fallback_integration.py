@@ -59,7 +59,18 @@ def guarded_call(
     *fallback_hook* and return that value instead.
 
     This is a low-level helper for use inside custom retry wrappers.
+
+    Raises
+    ------
+    TypeError
+        If *fallback_hook* does not have the expected ``__retryable_fallback__``
+        attribute, indicating it was not created via :func:`build_fallback_hook`.
     """
+    if not hasattr(fallback_hook, "__retryable_fallback__"):
+        raise TypeError(
+            "fallback_hook must be created via build_fallback_hook(); "
+            f"got {fallback_hook!r} which lacks '__retryable_fallback__'."
+        )
     try:
         return fn(*args, **kwargs)
     except Exception as exc:
