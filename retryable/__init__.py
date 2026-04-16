@@ -1,4 +1,4 @@
-"""retryable — configurable retry logic with exponential backoff and jitter."""
+"""retryable — configurable retry logic with exponential backoff and jitter support."""
 from retryable.core import retry
 from retryable.backoff import exponential_backoff, full_jitter, equal_jitter, no_jitter
 from retryable.predicates import on_exception, on_result, never_retry
@@ -30,8 +30,13 @@ from retryable.cooldown_integration import build_cooldown_on_retry, cooldown_pre
 from retryable.watermark import RetryWatermark
 from retryable.replay import RetryReplayLog, ReplayEntry
 from retryable.window import RetryWindow
-from retryable.hedge import HedgePolicy, hedge
-from retryable.hedge_integration import build_hedged_on_retry, hedged
+from retryable.hedge import HedgePolicy, HedgeCancelled
+from retryable.hedge_integration import build_hedged_on_retry
+from retryable.probe import RetryProbe, ProbeUnavailable
+from retryable.probe_integration import build_probe_on_retry
+from retryable.probe_cache_integration import CachedProbe, build_cached_probe_on_retry
+from retryable.tag import RetryTag, make_tag
+from retryable.tag_integration import build_tagged_on_retry, tag_predicate
 
 __all__ = [
     "retry",
@@ -59,6 +64,9 @@ __all__ = [
     "RetryWatermark",
     "RetryReplayLog", "ReplayEntry",
     "RetryWindow",
-    "HedgePolicy", "hedge",
-    "build_hedged_on_retry", "hedged",
+    "HedgePolicy", "HedgeCancelled", "build_hedged_on_retry",
+    "RetryProbe", "ProbeUnavailable", "build_probe_on_retry",
+    "CachedProbe", "build_cached_probe_on_retry",
+    "RetryTag", "make_tag",
+    "build_tagged_on_retry", "tag_predicate",
 ]
