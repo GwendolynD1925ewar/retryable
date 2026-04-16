@@ -73,3 +73,12 @@ class TestRetryWithTimeout:
                 return 1
 
             fn()
+
+    def test_timeout_negative_raises_value_error(self):
+        """A negative timeout value should be rejected just like zero."""
+        with pytest.raises(ValueError):
+            @retry(max_attempts=2, timeout=-1.0)
+            def fn():
+                return 1
+
+            fn()
