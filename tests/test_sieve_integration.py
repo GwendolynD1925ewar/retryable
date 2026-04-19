@@ -41,6 +41,20 @@ class TestBuildSieveOnRetry:
         result["on_retry"](attempt=1, exc=exc, result=None)
         assert seen[0] is exc
 
+    def test_on_retry_accumulates_multiple_scores(self):
+        """Calling on_retry multiple times should append each score in order."""
+        call_count = [0]
+        def scorer(attempt, exc):
+            call_count[0] += 1
+            return call_count[0] * 0.1
+        result = build_sieve_on_retry(threshold=0.5, scorer=scorer)
+        hook = result["on_retry"]
+        sieve = result["sieve"]
+        hook(attempt=1, exc=None, result=None)
+        hook(attempt=2, exc=None, result=None)
+        hook(attempt=3, exc=None, result=None)
+        assert sieve.scores == pytest.approx([0.1, 0.2, 0.3])
+
 
 class TestSievePredicate:
     def test_returns_true_when_allowed(self):
