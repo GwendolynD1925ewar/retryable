@@ -50,6 +50,20 @@ class RetryTimeout:
         """
         return min(delay, self.remaining)
 
+    def check(self) -> None:
+        """Raise :exc:`TimeoutError` if the deadline has already passed.
+
+        This is a convenience method for asserting that the timeout has not
+        expired before starting a new attempt.
+
+        Raises:
+            TimeoutError: If :attr:`expired` is ``True``.
+        """
+        if self.expired:
+            raise TimeoutError(
+                f"Retry deadline exceeded (total_seconds={self._total_seconds})"
+            )
+
     def __repr__(self) -> str:  # pragma: no cover
         return (
             f"RetryTimeout(total_seconds={self._total_seconds}, "
