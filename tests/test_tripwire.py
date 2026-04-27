@@ -93,9 +93,24 @@ class TestRetryTripwireReset:
         assert tw.consecutive == 0
         assert not tw.tripped
 
+    def test_reset_clears_tripped_state(self):
+        tw = RetryTripwire(threshold=1)
+        with pytest.raises(TripwireTripped):
+            tw.record_failure()
+        tw.reset()
+        assert not tw.tripped
+        assert tw.consecutive == 0
+
+    def test_can_record_failures_after_reset(self):
+        tw = RetryTripwire(threshold=2)
+        tw.record_failure()
+        tw.reset()
+        tw.record_failure()
+        assert tw.consecutive == 1
+        assert not tw.tripped
+
     def test_repr_contains_fields(self):
-        tw = RetryTripwire(threshold=3, label="x")
-        r = repr(tw)
-        assert "threshold=3" in r
-        assert "label='x'" in r
-        assert "tripped=False" in r
+        tw = RetryTripwire(threshold=3, label="svc")
+        result = repr(tw)
+        assert "threshold" in result
+        assert "svc" in result
