@@ -64,6 +64,15 @@ class TestRetryQuotaAcquire:
         q.acquire("a", now=0.0)
         q.acquire("b", now=0.0)  # should not raise
 
+    def test_acquire_exactly_at_window_boundary_evicts(self):
+        """Entries at exactly `now - window` should be evicted (boundary is exclusive)."""
+        q = RetryQuota(limit=2, window=10.0)
+        q.acquire("k", now=0.0)
+        q.acquire("k", now=1.0)
+        # At now=10.0 the entry at t=0.0 is exactly on the boundary; it should
+        # be evicted so that only the entry at t=1.0 remains, leaving 1 slot.
+        assert q.remaining("k", now=10.0) == 1
+
 
 class TestRetryQuotaRemaining:
     def test_full_remaining_initially(self):
